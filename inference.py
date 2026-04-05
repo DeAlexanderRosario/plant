@@ -4,7 +4,23 @@ print("[AI Engine] Loading AI components (this may take up to 60s on Pi 3B)...",
 import cv2
 import torch
 import numpy as np
+import ultralytics
 from ultralytics import YOLO
+
+# Fix for PyTorch 2.6+ security restriction (UnpicklingError)
+try:
+    if hasattr(torch.serialization, 'add_safe_globals'):
+        import ultralytics.nn.tasks
+        torch.serialization.add_safe_globals([
+            ultralytics.nn.tasks.DetectionModel,
+            ultralytics.nn.tasks.SegmentationModel,
+            ultralytics.nn.tasks.PoseModel,
+            ultralytics.nn.tasks.ClassificationModel,
+            ultralytics.nn.tasks.RTDETRDetectionModel
+        ])
+except Exception as e:
+    print(f"[AI Engine] Warning setting safe globals: {e}")
+
 print(f"[AI Engine] Core modules loaded in {time.time() - _start_time:.2f}s.", flush=True)
 
 # Comprehensive Class Mappings (Professional Labels)
