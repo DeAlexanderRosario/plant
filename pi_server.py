@@ -1,3 +1,19 @@
+import sys
+print("[System] SCRIPT BOOTING - PLEASE WAIT...", flush=True)
+
+def check_ram():
+    try:
+        with open('/proc/meminfo', 'r') as f:
+            lines = f.readlines()
+            for line in lines:
+                if "MemAvailable" in line:
+                    print(f"[System] RAM -> {line.strip()}", flush=True)
+                if "SwapTotal" in line:
+                    print(f"[System] RAM -> {line.strip()}", flush=True)
+    except:
+        pass
+
+check_ram()
 import os
 import cv2
 import time

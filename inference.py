@@ -1,7 +1,11 @@
+import time
+_start_time = time.time()
+print("[AI Engine] Loading AI components (this may take up to 60s on Pi 3B)...", flush=True)
 import cv2
 import torch
 import numpy as np
 from ultralytics import YOLO
+print(f"[AI Engine] Core modules loaded in {time.time() - _start_time:.2f}s.", flush=True)
 
 # Comprehensive Class Mappings (Professional Labels)
 class EdenScopeInference:
