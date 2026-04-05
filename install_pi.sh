@@ -26,7 +26,7 @@ fi
 # 3. INSTALL SYSTEM DEPENDENCIES
 echo "[EdenScope] Installing system dependencies for OpenCV/AI..."
 sudo apt-get update
-sudo apt-get install -y python3-pip python3-venv libatlas-base-dev libhdf5-dev libhdf5-serial-dev libqt5gui5 libqt5test5 libqt5core5a v4l-utils
+sudo apt-get install -y python3-pip python3-venv libatlas-base-dev libhdf5-dev libhdf5-serial-dev libqt5gui5 libqt5test5 libqt5core5a v4l-utils ffmpeg libavcodec-dev libavformat-dev libswscale-dev
 
 # 4. SETUP VIRTUAL ENVIRONMENT
 echo "[EdenScope] Refreshing Python virtual environment..."

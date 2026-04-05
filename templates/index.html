@@ -424,10 +424,17 @@
         document.getElementById('video-upload-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const fileInput = document.getElementById('video-file');
+            const submitBtn = this.querySelector('button[type="submit"]');
+            
             if (!fileInput.files.length) return alert('Please select a video file.');
 
             const formData = new FormData();
             formData.append('video', fileInput.files[0]);
+
+            // Loading state
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = 'Uploading...';
+            submitBtn.disabled = true;
 
             fetch('/upload_video', {
                 method: 'POST',
@@ -441,7 +448,11 @@
                     alert('Upload failed: ' + data.error);
                 }
             })
-            .catch(err => alert('Upload failed: ' + err));
+            .catch(err => alert('Upload failed: ' + err))
+            .finally(() => {
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            });
         });
 
         // Initialize

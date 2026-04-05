@@ -25,6 +25,7 @@ from relay_controller import RelayController
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024 # Limit upload size to 100MB
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Hardware and AI Initialization
@@ -71,6 +72,8 @@ def generate_frames():
     global state_status, video_source
 
     while True:
+        loop_start = time.time()
+
         with camera_lock:
             cap = get_video_capture()
             ret, frame = cap.read()
@@ -127,6 +130,14 @@ def generate_frames():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
+        # Rate Limit - If processing a file, sleep to maintain ~20 FPS.
+        # This prevents the Pi 3B from hitting 100% CPU and hanging.
+        if video_source != 0:
+            elapsed = time.time() - loop_start
+            target_delay = 0.05 # 20 FPS
+            if elapsed < target_delay:
+                time.sleep(target_delay - elapsed)
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -153,17 +164,22 @@ def upload_video():
         return jsonify({"success": False, "error": "No selected file"}), 400
         
     if file:
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
-        
-        with camera_lock:
-            if video_capture:
-                video_capture.release()
-            video_source = filepath
-            video_capture = None # Force re-init next frame request
+        try:
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            print(f"[System] Saving uploaded video to {filepath}...")
+            file.save(filepath)
             
-        return jsonify({"success": True, "message": "Video uploaded and source switched"})
+            with camera_lock:
+                if video_capture:
+                    video_capture.release()
+                video_source = filepath
+                video_capture = None # Force re-init next frame request
+                
+            return jsonify({"success": True, "message": "Video uploaded and source switched"})
+        except Exception as e:
+            print(f"[System] Upload failed: {str(e)}")
+            return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/switch_camera', methods=['POST'])
 def switch_camera():
