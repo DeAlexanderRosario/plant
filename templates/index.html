@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdenScope | AI Plant Protection System</title>
+    <!-- Professional Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: #ecfdf5;
+            color: var(--success);
+        }
+
+        .status-badge.offline {
+            background: #fef2f2;
+            color: var(--danger);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .main-content {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .video-feed {
+            position: relative;
+            background: #000;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-feed img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .telemetry-grid {
+            padding: 1.25rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .metric {
+            padding: 0.75rem;
+            border-radius: 6px;
+            background: #f1f5f9;
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            margin-bottom: 2px;
+        }
+
+        .metric-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .pump-status-panel {
+            margin: 1.25rem;
+            padding: 1.25rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .pump-ready { background: #f1f5f9; color: var(--text-muted); }
+        .pump-active { background: #dcfce7; color: var(--success); border: 2px solid var(--success); }
+        .pump-cooldown { background: #fef3c7; color: var(--warning); border: 2px solid var(--warning); }
+
+        .settings-form {
+            padding: 1.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem 1.25rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            width: 100%;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        .btn-outline { background: white; border-color: var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+
+        .btn-danger { background: white; border-color: var(--danger); color: var(--danger); }
+        .btn-danger:hover { background: #fef2f2; }
+
+        .video-controls {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        #video-upload-form {
+            display: flex;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8125rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+            EdenScope
+        </div>
+        <div id="sys-status-badge" class="status-badge">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor;"></span>
+            SYSTEM ONLINE
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Monitoring Sector -->
+        <div class="space-y-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Real-time Optics Stream</h2>
+                    <span id="source-badge" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">SOURCE: CAMERA</span>
+                </div>
+                <div class="video-feed">
+                    <img id="video-stream" src="/video_feed" alt="Optics Stream" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100%\' height=\'300\'><rect width=\'100%\' height=\'100%\' fill=\'%23f1f5f9\'/><text x=\'50%\' y=\'50%\' font-family=\'Inter\' font-size=\'14\' fill=\'%2364748b\' text-anchor=\'middle\'>CAMERA CONNECTION TIMEOUT</text></svg>';">
+                </div>
+                <div class="video-controls">
+                    <form id="video-upload-form">
+                        <input type="file" id="video-file" name="video" accept="video/mp4,video/avi" style="font-size: 0.75rem;">
+                        <button type="submit" class="btn btn-outline" style="width: auto;">Upload Demo</button>
+                    </form>
+                    <button class="btn btn-outline" onclick="runSample()" style="width: auto; border-color: var(--success); color: var(--success);">Run Sample</button>
+                    <button class="btn btn-danger" id="btn-camera" onclick="switchToCamera()" style="width: auto;">Live Feed</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar / Controls -->
+        <div class="space-y-6">
+            <!-- Telemetry Card -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="card-header">
+                    <h2>System Telemetry</h2>
+                </div>
+                <div class="telemetry-grid">
+                    <div class="metric">
+                        <span class="metric-label">Target Analysis</span>
+                        <span class="metric-value" id="current-target">None</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Detection Status</span>
+                        <span class="metric-value" id="health-status">Clear</span>
+                    </div>
+                </div>
+                <div id="pump-indicator" class="pump-status-panel pump-ready">
+                    SPRINKLER STANDBY
+                </div>
+            </div>
+
+            <!-- Configuration Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>System Configuration</h2>
+                </div>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label>AI Confidence: <span id="conf-val" style="color: var(--primary);">0.35</span></label>
+                        <input type="range" id="setting-conf" min="0.1" max="0.9" step="0.05" value="0.35" oninput="document.getElementById('conf-val').innerText = this.value">
+                    </div>
+                    <div class="form-group">
+                        <label>Sprinkler Duration (seconds)</label>
+                        <input type="number" id="setting-pump-dur" min="0.5" max="10.0" step="0.5" value="2.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Recharge Interval (seconds)</label>
+                        <input type="number" id="setting-pump-cool" min="1.0" max="20.0" step="1.0" value="5.0">
+                    </div>
+                    <button onclick="saveSettings()" class="btn btn-primary">Apply Changes</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function fetchStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    const targetEl = document.getElementById('current-target');
+                    const healthEl = document.getElementById('health-status');
+                    const pumpEl = document.getElementById('pump-indicator');
+                    const sourceEl = document.getElementById('source-badge');
+                    const sysBadge = document.getElementById('sys-status-badge');
+
+                    targetEl.innerText = data.target || "Scanning...";
+                    sourceEl.innerText = "SOURCE: " + (data.source || "CAMERA");
+
+                    // Detection logic
+                    if (data.is_healthy === true) {
+                        healthEl.innerText = "Healthy";
+                        healthEl.style.color = "var(--success)";
+                    } else if (data.is_healthy === false) {
+                        healthEl.innerText = "Anomaly Detected";
+                        healthEl.style.color = "var(--danger)";
+                    } else {
+                        healthEl.innerText = "Clear";
+                        healthEl.style.color = "var(--text-muted)";
+                    }
+
+                    // Pump status
+                    if (data.pump_status === "PUMPING") {
+                        pumpEl.innerText = "SPRINKLER ACTIVE";
+                        pumpEl.className = "pump-status-panel pump-active";
+                    } else if (data.pump_status === "COOLDOWN") {
+                        pumpEl.innerText = "RECHARGING SYSTEM";
+                        pumpEl.className = "pump-status-panel pump-cooldown";
+                    } else {
+                        pumpEl.innerText = "SYSTEM READY";
+                        pumpEl.className = "pump-status-panel pump-ready";
+                    }
+
+                    // System online badge
+                    sysBadge.innerText = "SYSTEM ONLINE";
+                    sysBadge.className = "status-badge";
+                })
+                .catch(err => {
+                    const sysBadge = document.getElementById('sys-status-badge');
+                    sysBadge.innerText = "CONNECTION LOST";
+                    sysBadge.className = "status-badge offline";
+                });
+        }
+
+        function loadConfig() {
+            fetch('/api/settings')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('setting-conf').value = data.confidence_threshold;
+                    document.getElementById('conf-val').innerText = data.confidence_threshold;
+                    document.getElementById('setting-pump-dur').value = data.pump_duration;
+                    document.getElementById('setting-pump-cool').value = data.pump_cooldown;
+                });
+        }
+
+        function saveSettings() {
+            const payload = {
+                confidence_threshold: document.getElementById('setting-conf').value,
+                pump_duration: document.getElementById('setting-pump-dur').value,
+                pump_cooldown: document.getElementById('setting-pump-cool').value
+            };
+
+            fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Configuration successfully applied.');
+                } else {
+                    alert('Error applying configuration.');
+                }
+            });
+        }
+
+        function switchToCamera() {
+            fetch('/switch_camera', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('video-stream').src = "/video_feed?t=" + new Date().getTime();
+                }
+            });
+        }
+
+        function runSample() {
+            fetch('/run_sample', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('video-stream').src = "/video_feed?t=" + new Date().getTime();
+                } else {
+                    alert('Sample video not found in samples/ directory.');
+                }
+            });
+        }
+
+        document.getElementById('video-upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('video-file');
+            if (!fileInput.files.length) return alert('Please select a video file.');
+
+            const formData = new FormData();
+            formData.append('video', fileInput.files[0]);
+
+            fetch('/upload_video', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('video-stream').src = "/video_feed?t=" + new Date().getTime();
+                } else {
+                    alert('Upload failed: ' + data.error);
+                }
+            })
+            .catch(err => alert('Upload failed: ' + err));
+        });
+
+        // Initialize
+        loadConfig();
+        setInterval(fetchStatus, 1000);
+    </script>
+</body>
+</html>

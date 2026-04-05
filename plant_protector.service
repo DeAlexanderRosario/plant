@@ -1,0 +1,15 @@
+[Unit]
+Description=EdenScope Drone Payload Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/admin/plant
+ExecStart=/home/admin/plant/venv/bin/python pi_server.py
+Restart=always
+RestartSec=5
+# Note: Ensure this user matches your Pi's username
+User=admin
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+Flask==2.3.3
+ultralytics==8.1.0
+opencv-python-headless
+RPi.GPIO
+werkzeug==3.0.1
+numpy<2.0.0
