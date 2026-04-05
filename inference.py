@@ -18,13 +18,12 @@ try:
     
     @functools.wraps(_original_torch_load)
     def _patched_torch_load(*args, **kwargs):
-        if 'weights_only' in kwargs:
-            kwargs['weights_only'] = False
-        # If it's a version that defaults to True, we explicitly set it to False
+        # Force weights_only to False to bypass PyTorch 2.6+ security blocks
+        kwargs['weights_only'] = False
         return _original_torch_load(*args, **kwargs)
         
     torch.load = _patched_torch_load
-    print("[AI Engine] Applied PyTorch 2.6 compatibility patch.", flush=True)
+    print("[AI Engine] PyTorch 2.6 'weights_only' security bypassed.", flush=True)
 except Exception as e:
     print(f"[AI Engine] Warning setting compatibility patch: {e}", flush=True)
 
